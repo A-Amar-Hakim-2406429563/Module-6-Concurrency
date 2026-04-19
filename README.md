@@ -105,3 +105,29 @@ Dari sini aku jadi ngerti kalau server bisa kasih response yang berbeda tergantu
 
 ## Screenshot
 ![Commit 2 screen capture](./assets/images/commit3.png)
+
+# Commit 4 Reflection Notes
+Di bagian ini aku coba simulasi slow response di server yang aku buat. Jadi aku nambah route baru yaitu `/sleep` yang bikin server delay selama 10 detik sebelum ngasih response. Aku nambah kondisi ini di code:
+
+```rust
+"GET /sleep HTTP/1.1" => {
+    thread::sleep(Duration::from_secs(10));
+    ("HTTP/1.1 200 OK", "hello.html")
+}
+```
+Jadi kalau aku buka `/sleep,` server bakal nunggu dulu sebelum ngirim response.
+
+## Yang terjadi sekarang itu
+Pas aku coba buka dua tab browser:
+- satu buka `/sleep`
+- satu lagi buka `/`
+ternyata yang `/` juga ikut nunggu sampai yang `/sleep` selesai.
+
+## Insight yang aku dapet
+Dari sini aku jadi ngerti kalau:
+- Server yang aku buat masih single-threaded
+- Jadi server cuma bisa handle satu request dalam satu waktu
+- Kalau ada request yang lama (kayak sleep), request lain jadi ikut ketahan
+
+## Kesimpulan
+Dari bagian ini aku jadi ngerti kelemahan dari single-threaded server, dan kenapa kita butuh cara supaya server bisa handle banyak request sekaligus (concurrency/multithreading).
