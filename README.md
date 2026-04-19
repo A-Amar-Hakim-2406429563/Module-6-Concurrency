@@ -160,8 +160,42 @@ Terus di lib.rs, aku bikin:
 ## Insight yang aku dapet
 Dari sini aku jadi ngerti kalau:
 - multithreading bikin server bisa handle banyak request sekaligus
-- request yang lama (kayak /sleep) nggak akan nge-block request lain
+- request yang lama (kayak `/sleep`) nggak akan nge block request lain
 - ThreadPool lebih efisien daripada bikin thread baru terus-terusan gituu
 
 ## Kesimpulan
 Menurut aku ini bagian paling penting karena sekarang server yang aku buat udah bisa jalan lebih optimal dan nggak gampang ke block gitu. Dari sini juga aku jadi lebih ngerti konsep concurrency di Rust, terutama gimana cara manage thread dengan aman.
+
+# Commit Bonus Reflection Notes
+Di bagian bonus ini aku coba bikin function `build` sebagai pengganti dari `new`, tapi dengan cara yang lebih aman.
+
+## Apa yang aku lakukan
+
+Aku nambah function `build` di ThreadPool yang return `Result`, jadi nggak langsung panic kalau ada error.
+
+```rust
+pub fn build(size: usize) -> Result<ThreadPool, String> {
+    if size == 0 {
+        return Err(String::from("ThreadPool size must be greater than 0"));
+    }
+
+    // inisialisasi sama seperti new
+}
+```
+Terus di main.rs, aku pakai:
+```rust
+let pool = ThreadPool::build(4).unwrap();
+```
+
+## Perbedaan dengan new:
+- new() --> pakai assert!, jadi kalau error langsung panic (program berhenti)
+- build() --> return Result, jadi error bisa ditangani
+
+## Insight yang aku dapet
+Dari sini aku jadi ngerti kalau:
+- lebih baik handle error daripada langsung crash
+- Result bikin program lebih fleksibel dan aman
+- ini lebih sesuai dengan best practice di Rust
+
+## Kesimpulan
+Menurut aku build lebih baik dibanding new, karena lebih aman dan bisa handle error dengan lebih jelas. Tapi new juga masih berguna kalau kita yakin input-nya selalu valid.
