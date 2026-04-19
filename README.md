@@ -131,3 +131,37 @@ Dari sini aku jadi ngerti kalau:
 
 ## Kesimpulan
 Dari bagian ini aku jadi ngerti kelemahan dari single-threaded server, dan kenapa kita butuh cara supaya server bisa handle banyak request sekaligus (concurrency/multithreading).
+
+# Commit 5 Reflection Notes
+Di bagian ini aku lanjut dari sebelumnya, sekarang aku ubah server yang awalnya single-threaded jadi multithreaded pakai ThreadPool. Jadi sekarang server nggak cuma jalan di satu thread, tapi bisa handle beberapa request sekaligus gituu.
+
+## Apa yang aku pelajari
+Di sini aku belajar konsep ThreadPool, yaitu kumpulan thread yang siap dipakai buat ngerjain task.
+Jadi alurnya:
+- ThreadPool dibuat dengan beberapa worker (thread)
+- setiap request masuk akan dikirim sebagai job
+- worker yang available bakal ambil job dan jalanin
+
+## Perubahan yang aku lakukan
+Di `main.rs`, aku ganti dari langsung handle request jadi pakai ThreadPool:
+
+```rust
+pool.execute(|| {
+    handle_connection(stream);
+});
+```
+
+Terus di lib.rs, aku bikin:
+- struct ThreadPool
+- struct Worker
+- channel (mpsc) buat kirim job
+- pakai Arc dan Mutex biar bisa dipakai banyak thread
+
+## Insight yang aku dapet
+Dari sini aku jadi ngerti kalau:
+- multithreading bikin server bisa handle banyak request sekaligus
+- request yang lama (kayak /sleep) nggak akan nge-block request lain
+- ThreadPool lebih efisien daripada bikin thread baru terus-terusan gituu
+
+## Kesimpulan
+Menurut aku ini bagian paling penting karena sekarang server yang aku buat udah bisa jalan lebih optimal dan nggak gampang ke block gitu. Dari sini juga aku jadi lebih ngerti konsep concurrency di Rust, terutama gimana cara manage thread dengan aman.
